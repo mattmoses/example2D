@@ -30,6 +30,12 @@
 close all
 clear all
 
+isOctave = exist('OCTAVE_VERSION')
+
+if isOctave
+	more off
+end
+
 % set the pseudo-random number generator seed
 randn('seed',42);
 
@@ -215,8 +221,8 @@ Cov_xy = Cov(1:2,1:2);
 % ok now we have a covariance matrix for the simulated end-effector data.
 % we want to display this as an ellipsoid. diagonalizing Cov will give us
 % the rotation matrix for rotating the ellipsoid
-[Vcov, Dcov] = eigs(Cov);
-[Vcov_xy, Dcov_xy] = eigs(Cov_xy);
+[Vcov, Dcov] = eig(Cov);
+[Vcov_xy, Dcov_xy] = eig(Cov_xy);
 
 % just in case Vcov is a reflection, this converts it to a plain rotation
 Vcov = det(Vcov)*Vcov;
@@ -329,12 +335,15 @@ gamma
 xlabel('x')
 ylabel('y')
 zlabel('\phi')
-axis equal
-camlight left
 
+axis equal
 set(gca, 'DataAspectRatio', [2 2 1])
-camlight(45, 1)
 view(45,15)
+
+if isOctave == 0
+	camlight left
+	camlight(45, 1)
+end
 
 % Note: here are the other values used to generate the figure rho_alpha_3D_1
 % nsa = 32
@@ -366,7 +375,8 @@ view(45,15)
 % yy = y_com + linspace(-.3,.3,nsa);
 % phiphi = phi_com + linspace(-0.05, 0.05, nphi);
 
-% The results will vary slightly from run to run because of the random
+% If the pseudo-random generator seed is not set constant,
+% the results will vary slightly from run to run because of the random
 % samples. Cov, the sample means, rho_int, and gamma all have a little
 % jitter from run to run.
 % Typical values for gamma are 0.10 to 0.11
